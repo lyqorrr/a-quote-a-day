@@ -1132,7 +1132,7 @@ body.t-brutalist .dir-row-avatar { border-radius: 4px; }
    class="comment-btn"
    target="_blank"
    rel="noopener">
-  💬 Discuss this quote
+  💬 View / start discussion!
 </a>
 
 
@@ -1293,8 +1293,11 @@ function render(animate = false) {
   updateDots();
   renderReactionCounts();
  const commentLink = document.getElementById('commentLink');
+
   commentLink.href =
-    `https://github.com/AndrewVeda/a-quote-a-day/discussions/${idx + 1}`;
+  `https://github.com/AndrewVeda/a-quote-a-day/discussions?discussions_q=Quote+%23${idx+1}`;
+
+  
 }
 
 /* ══════════════════════════════════════════════
