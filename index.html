@@ -526,12 +526,9 @@ body.t-cyber .stage::after {
 
   /* Directory toggle → icon-only on mobile */
   .dir-toggle {
-    font-size: 0; letter-spacing: 0;
-    padding: 0;
-    min-width: 44px; min-height: 44px;
-    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    padding: 6px 12px;
   }
-  .dir-toggle::before { content: '⊞'; font-size: 20px; }
 
   /* theme swatches row */
   .theme-strip { gap: 2px; padding: 6px 0; }
@@ -602,7 +599,6 @@ body.t-cyber .stage::after {
 
 /* ── very small phones (320–374px) ── */
 @media (max-width: 374px) {
-  .topbar-title { display: none; }
   .theme-btn { width: 24px; height: 24px; }
   .card { padding: 22px 16px 18px; }
   .rxn { padding: 8px 9px; }
@@ -1023,20 +1019,6 @@ body.t-brutalist .dir-row-avatar { border-radius: 4px; }
   }
 
   /* 2. Fix Top Bar Crowding (Icon-only Directory button) */
-  .dir-toggle {
-    font-size: 0; /* Hide text "Directory" */
-    padding: 0;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .dir-toggle::after {
-    content: '⊞'; /* Icon visible */
-    font-size: 20px;
-    color: var(--gold);
-  }
 
   /* 3. Tame the Giant Card & Reactions */
   .card {
@@ -1123,6 +1105,42 @@ body.t-wellness {
   -webkit-backdrop-filter: none !important;
   filter: none !important;
 }
+#shareCard, #shareCard * {
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* ─── QUICK DIRECTORY TABS ─── */
+.quick-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.quick-tab {
+  font-family: 'Raleway', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  border: 1px solid var(--card-border);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-dim);
+  transition: all 0.2s;
+}
+
+.quick-tab:hover {
+  background: rgba(255,255,255,0.12);
+  color: var(--text);
+}
+
+.quick-tab.active {
+  background: var(--gold);
+  color: #0a0a0a;
+  border-color: var(--gold);
+}
 
 
 </style>
@@ -1133,14 +1151,21 @@ body.t-wellness {
 <!-- ─── TOP BAR ─── -->
 <div class="shell">
 <header class="topbar">
-  <div class="topbar-left">
+ <div class="topbar-left" style="flex-direction:column; align-items:flex-start; gap:6px;">
+  <div style="display:flex; align-items:center; gap:10px;">
     <span class="topbar-title">A Quote A Day</span>
     <span class="topbar-counter" id="counter">— / —</span>
   </div>
-  <div style="display:flex;align-items:center;gap:14px;">
-    <button class="dir-toggle" id="dirToggle">⊞ Directory</button>
-    <div class="theme-strip" id="themeBtns"></div>
+
+  <!-- Quick directory buttons -->
+  <div class="quick-tabs">
+    <button class="quick-tab" data-tab="authors">Authors</button>
+    <button class="quick-tab" data-tab="contributors">Contributors</button>
+    <button class="quick-tab" data-tab="departments">Departments</button>
   </div>
+</div>
+
+
 </header>
 
 <!-- ─── STAGE ─── -->
@@ -1179,6 +1204,11 @@ body.t-wellness {
     <div class="nav-arrows">
       <button class="nav-btn" id="prevBtn">←</button>
       <button class="nav-btn" id="nextBtn">→</button>
+    </div>
+
+    <!-- Theme Selector -->
+    <div style="display:flex; justify-content:center; margin-top:20px;">
+      <div class="theme-strip" id="themeBtns"></div>
     </div>
 
     <!-- Dots -->
@@ -1269,7 +1299,7 @@ async function fetchQuotes() {
         const department  = deptMatch ? deptMatch[2].trim() : 'Unknown';
 
         quotes.push({
-          quote: qPart.replace(/[“”"]/g, '').trim(),
+          quote: qPart.replace(/["""]/g, '').trim(),
           author:      aPart.trim() || 'Unknown',
           contributor: contribName,
           department:  department,
@@ -1418,9 +1448,32 @@ async function loadState() {
 let dirIndex     = { authors: {}, contributors: {}, departments: {} }; // name → [quoteIdx, …]
 let dirTab       = 'authors';   // current tab
 let dirExpanded  = null;        // currently expanded row key (or null)
+document.querySelectorAll('.quick-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
 
-/* ── build index once after quotes are loaded ── */
-function buildDirectoryIndex() {
+    // 1. Open directory panel
+    openDir();
+
+    // 2. Activate correct directory tab pill
+    document.querySelectorAll('.dir-tab').forEach(b => {
+      b.classList.toggle('active', b.dataset.tab === tab);
+    });
+
+    // 3. Update directory state
+    dirTab = tab;
+    dirExpanded = null;
+    document.getElementById('dirSearch').value = '';
+    renderDirList();
+
+    // 4. Visual state for topbar buttons
+    document.querySelectorAll('.quick-tab').forEach(b => {
+      b.classList.toggle('active', b === btn);
+    });
+  });
+});
+
+  function buildDirectoryIndex() {
   dirIndex = { authors: {}, contributors: {}, departments: {} };
   quotes.forEach((q, i) => {
     const a = q.author;
@@ -1433,9 +1486,11 @@ function buildDirectoryIndex() {
 }
 
 /* ── open / close ── */
-document.getElementById('dirToggle').addEventListener('click', () => {
-  openDir();
-});
+const dirToggle = document.getElementById('dirToggle');
+if (dirToggle) {
+  dirToggle.addEventListener('click', openDir);
+}
+
 document.getElementById('dirClose').addEventListener('click', closeDir);
 document.getElementById('dirBackdrop').addEventListener('click', closeDir);
 
@@ -1444,7 +1499,6 @@ function openDir() {
   document.getElementById('dirBackdrop').classList.add('show');
   renderDirList();                          // refresh list each time it opens
   document.getElementById('dirSearch').value = '';
-  document.getElementById('dirSearch').focus();
 }
 function closeDir() {
   document.getElementById('dirPanel').classList.remove('open');
@@ -1599,10 +1653,10 @@ async function shareAsImage() {
 
     // Fill share card
     document.getElementById('sc-quote').textContent =
-      `“${q.quote}”`;
+      q.quote;
 
     document.getElementById('sc-author').textContent =
-      `— ${q.author}`;
+      `${q.author}`;
 
     document.getElementById('sc-about').textContent =
       q.about ? q.about : '';
@@ -1612,11 +1666,15 @@ async function shareAsImage() {
 
     const node = document.getElementById('shareCard');
 
-    // Render to canvas
-    const canvas = await html2canvas(node, {
-      scale: 2,
-      backgroundColor: '#0f1629'
-    });
+   
+   const dpr = window.devicePixelRatio || 2;
+
+const canvas = await html2canvas(node, {
+  scale: dpr,
+  useCORS: true,
+  backgroundColor: '#1a1410'
+});
+
 
     const blob = await new Promise(res =>
       canvas.toBlob(res, 'image/png')
@@ -1643,47 +1701,172 @@ async function shareAsImage() {
 </script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
+<!-- ═══════════════════════════════════════════════════════════
+     ARISTOCRATIC SHARE CARD DESIGN
+     Featuring: Ornate borders, gold accents, refined typography
+     ═══════════════════════════════════════════════════════════ -->
  <div id="shareCard" style="
   position: fixed;
   left: -9999px;
   top: 0;
   width: 1080px;
   height: 1350px;
-  padding: 140px 120px;
-  background: #0f1629;
-  color: #e2e8f0;
+  padding: 0;
+  background: linear-gradient(135deg, #1a1410 0%, #2d1f15 50%, #1a1410 100%);
+  color: #f5ede0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
   font-family: 'Cormorant Garamond', serif;
+  position: relative;
+  overflow: hidden;
 ">
-  <div id="sc-quote"
-       style="font-size:64px; line-height:1.35; font-weight:300;"></div>
-
-  <div id="sc-author"
-       style="margin-top:48px; font-size:22px; letter-spacing:3px; font-family:'Raleway',sans-serif; color:#60a5fa;">
-  </div>
-
-  <div id="sc-about"
-       style="margin-top:36px; font-size:30px; font-style:italic; opacity:0.75; line-height:1.4;">
-  </div>
-
-  <div id="sc-contrib"
-       style="margin-top:60px; font-size:20px; opacity:0.6; font-family:'Raleway',sans-serif;">
-  </div>
-
+  
+  <!-- Textured overlay -->
   <div style="
-    position:absolute;
-    bottom:80px;
-    left:0;
-    right:0;
-    font-size:16px;
-    letter-spacing:2px;
-    opacity:0.35;
-    font-family:'Raleway',sans-serif;
+    position: absolute;
+    inset: 0;
+    background-image: 
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(212,175,55,0.02) 2px, rgba(212,175,55,0.02) 4px),
+      repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(212,175,55,0.02) 2px, rgba(212,175,55,0.02) 4px);
+    pointer-events: none;
+    opacity: 0.3;
+  "></div>
+
+  <!-- Ornate border frame -->
+  <div style="
+    position: absolute;
+    inset: 60px;
+    border: 3px solid #d4af37;
+    box-shadow: 
+      inset 0 0 0 1px rgba(212,175,55,0.3),
+      inset 0 0 0 12px #1a1410,
+      0 0 30px rgba(212,175,55,0.15);
+    pointer-events: none;
+  "></div>
+
+  <!-- Corner flourishes -->
+  <div style="position:absolute; top:50px; left:50px; width:60px; height:60px; border-top:4px solid #d4af37; border-left:4px solid #d4af37; opacity:0.8;"></div>
+  <div style="position:absolute; top:50px; right:50px; width:60px; height:60px; border-top:4px solid #d4af37; border-right:4px solid #d4af37; opacity:0.8;"></div>
+  <div style="position:absolute; bottom:50px; left:50px; width:60px; height:60px; border-bottom:4px solid #d4af37; border-left:4px solid #d4af37; opacity:0.8;"></div>
+  <div style="position:absolute; bottom:50px; right:50px; width:60px; height:60px; border-bottom:4px solid #d4af37; border-right:4px solid #d4af37; opacity:0.8;"></div>
+
+  <!-- Inner corner accents -->
+  <div style="position:absolute; top:70px; left:70px; width:30px; height:30px; border-top:2px solid #d4af37; border-left:2px solid #d4af37; opacity:0.4;"></div>
+  <div style="position:absolute; top:70px; right:70px; width:30px; height:30px; border-top:2px solid #d4af37; border-right:2px solid #d4af37; opacity:0.4;"></div>
+  <div style="position:absolute; bottom:70px; left:70px; width:30px; height:30px; border-bottom:2px solid #d4af37; border-left:2px solid #d4af37; opacity:0.4;"></div>
+  <div style="position:absolute; bottom:70px; right:70px; width:30px; height:30px; border-bottom:2px solid #d4af37; border-right:2px solid #d4af37; opacity:0.4;"></div>
+
+  <!-- Content wrapper -->
+  <div style="padding: 200px 160px; position: relative; z-index: 2;">
+    
+    <!-- Top decorative element -->
+    <div style="
+      margin: 0 auto 50px;
+      width: 120px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #d4af37, transparent);
+    "></div>
+    
+    <!-- Opening quote mark -->
+    <div style="
+      font-family: 'Cinzel', serif;
+      font-size: 140px;
+      line-height: 0.5;
+      color: #d4af37;
+      opacity: 0.25;
+      margin-bottom: 40px;
+    ">"</div>
+
+    <div id="sc-quote" style="
+      font-size: 64px;
+      line-height: 1.45;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      color: #f5ede0;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    "></div>
+
+    <!-- Closing quote mark -->
+    <div style="
+      font-family: 'Cinzel', serif;
+      font-size: 140px;
+      line-height: 0.5;
+      color: #d4af37;
+      opacity: 0.25;
+      margin-top: 40px;
+      transform: rotate(180deg);
+    ">"</div>
+
+    <!-- Decorative divider -->
+    <div style="
+      margin: 50px auto 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    ">
+      <div style="width:80px; height:1px; background:linear-gradient(90deg, transparent, #d4af37);"></div>
+      <div style="width:8px; height:8px; background:#d4af37; transform:rotate(45deg); opacity:0.6;"></div>
+      <div style="width:80px; height:1px; background:linear-gradient(90deg, #d4af37, transparent);"></div>
+    </div>
+
+    <div id="sc-author" style="
+      margin-top: 48px;
+      font-family: 'Cinzel', serif;
+      font-size: 36px;
+      letter-spacing: 4px;
+      color: #d4af37;
+      text-transform: uppercase;
+      font-weight: 500;
+      text-shadow: 0 2px 12px rgba(212,175,55,0.3);
+    "></div>
+
+    <div id="sc-about" style="
+      margin-top: 45px;
+      font-size: 32px;
+      font-style: italic;
+      color: #c9b896;
+      line-height: 1.5;
+      opacity: 0.85;
+    "></div>
+
+    <div id="sc-contrib" style="
+      margin-top: 70px;
+      font-family: 'Raleway', sans-serif;
+      font-size: 26px;
+      letter-spacing: 2px;
+      color: #a89968;
+      font-weight: 300;
+    "></div>
+  </div>
+
+  <!-- Bottom decorative element and branding -->
+  <div style="
+    position: absolute;
+    bottom: 100px;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
   ">
-    A Quote A Day
+    <div style="
+      width: 100px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #d4af37, transparent);
+      opacity: 0.5;
+    "></div>
+    <div style="
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      letter-spacing: 4px;
+      color: #d4af37;
+      opacity: 0.5;
+      text-transform: uppercase;
+    ">A Quote A Day</div>
   </div>
 </div>
 
