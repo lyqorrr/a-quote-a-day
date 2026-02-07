@@ -1133,6 +1133,13 @@ body.t-brutalist .dir-row-avatar { border-radius: 4px; }
    rel="noopener">
   💬 View / start discussion!
 </a>
+    
+<a class="comment-btn"
+   href="https://github.com/AndrewVeda/a-quote-a-day/edit/main/QUOTES.md"
+   target="_blank"
+   rel="noopener">
+✏️ Add your quote
+</a>
 
 
     <!-- Nav -->
@@ -1229,7 +1236,7 @@ async function fetchQuotes() {
         const department  = deptMatch ? deptMatch[2].trim() : 'Unknown';
 
         quotes.push({
-          quote:       qPart.replace(/[""]/g, '').trim(),
+          quote: qPart.replace(/[“”"]/g, '').trim(),
           author:      aPart.trim() || 'Unknown',
           contributor: contribName,
           department:  department,
