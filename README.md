@@ -42,8 +42,6 @@ Contributor history reflects **authorship and participation**.
 
 - Quotes belong to their original authors  
 - Reflections belong to the student contributors  
-- Content is used strictly for educational purposes  
-
 ---
 
 > Return tomorrow. That matters more than adding more today!
