@@ -12,3 +12,6 @@ ADD YOUR QUOTES BELOW THIS LINE. COPY AND PASTE ONE SET ABOVE AND EDIT IT. Menti
 
 "Life doesn’t give us purpose. We give life purpose.” — Barry Allen(Flash)
 added by Barry(Pacman) (cyber security)| about : It means meaning isn’t handed to you by fate — you create it through your choices and actions.
+
+"The more you fear something happening, the more likely it is to occur." - Murphy's Law (The quote a.k.a "Anything that can go wrong, will go wrong.")
+-> Added by Cath (CSE) | Reflection : Fear and overthinking can increase mistakes, making what we dread more likely to happen. Instead of worrying, calm preparation and adaptability help turn possible failures into learning opportunities.
