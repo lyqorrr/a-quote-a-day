@@ -9,7 +9,7 @@
   rel="stylesheet"
   crossorigin="anonymous">
 <style>
-/* ─── RESET & BASE ─── */
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -32,7 +32,6 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ─── LAYOUT SHELL ─── */
 .shell {
   height: 100vh;
   display: grid;
@@ -40,7 +39,6 @@ html, body {
   grid-template-columns: 1fr;
 }
 
-/* ─── TOP BAR ─── */
 .topbar {
   display: flex;
   align-items: center;
@@ -70,7 +68,7 @@ html, body {
   border: 1px solid var(--card-border);
 }
 
-/* ─── THEME SWITCHER ─── */
+
 .theme-strip {
   display: flex;
   gap: 6px;
@@ -97,7 +95,6 @@ html, body {
 .theme-btn[data-theme="glass"]    { --swatch: linear-gradient(135deg,#1a1a2e,#16213e); }
 .theme-btn[data-theme="poster"]   { --swatch: linear-gradient(135deg,#0f0f0f,#2a2a2a); }
 
-/* ─── MAIN STAGE ─── */
 .stage {
   display: flex;
   align-items: center;
@@ -106,7 +103,6 @@ html, body {
   overflow: hidden;
   min-height: 0;
 }
-/* ambient bg — animated per-theme via JS class */
 .ambient {
   position: absolute; inset: 0;
   transition: background 0.8s ease;
@@ -119,7 +115,7 @@ html, body {
   transition: all 0.8s ease;
 }
 
-/* ─── QUOTE CARD ─── */
+
 .card-wrap {
   position: relative;
   z-index: 2;
@@ -164,7 +160,6 @@ html, body {
   to { opacity: 0; transform: translateY(-18px) scale(0.96); }
 }
 
-/* ─── QUOTE TYPOGRAPHY ─── */
 .q-mark {
   font-family: 'Cinzel', serif;
   font-size: 72px;
@@ -216,7 +211,7 @@ html, body {
   transition: opacity 0.3s;
 }
 
-/* ─── REACTION BAR ─── */
+
 .reactions {
   display: flex;
   gap: 10px;
@@ -259,7 +254,7 @@ html, body {
   100% { transform: scale(1); }
 }
 
-/* ─── NAV ARROWS ─── */
+
 .nav-arrows {
   display: flex;
   gap: 14px;
@@ -282,7 +277,7 @@ html, body {
 .nav-btn:hover { background: rgba(255,255,255,0.10); border-color: var(--gold); transform: scale(1.08); }
 .nav-btn:active { transform: scale(0.93); }
 
-/* ─── DOT INDICATOR ─── */
+
 .dot-strip {
   display: flex;
   gap: 5px;
@@ -303,7 +298,7 @@ html, body {
 .dot:hover { transform: scale(1.4); background: rgba(255,255,255,0.4); }
 .dot.active { background: var(--gold); box-shadow: 0 0 6px rgba(212,175,55,0.5); }
 
-/* ─── FOOTER ─── */
+
 footer {
   padding: 12px;
   text-align: center;
@@ -315,9 +310,7 @@ footer {
   background: rgba(10,10,10,0.7);
 }
 
-/* ─── THEME OVERRIDES ─── */
 
-/* ── MINIMAL ── */
 body.t-minimal {
   background: #f5f0e8;
   --text: #2c2420;
@@ -344,7 +337,7 @@ body.t-minimal .dot.active { background: var(--gold); }
 body.t-minimal footer { background: rgba(245,240,232,0.9); border-top-color: rgba(0,0,0,0.06); color: #aaa; }
 body.t-minimal .topbar-counter { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.08); color: #8a7e72; }
 
-/* ── DARK ACADEMIA ── */
+
 body.t-academia {
   background: #2a1f14;
   --text: #e8dcc8;
@@ -360,7 +353,7 @@ body.t-academia .q-text { font-family: 'Playfair Display', serif; font-style: it
 body.t-academia .q-mark { font-size: 80px; opacity: 0.25; }
 body.t-academia footer { background: rgba(20,12,4,0.85); color: #6b5d44; }
 
-/* ── CYBERPUNK ── */
+
 body.t-cyber {
   background: #050510;
   --text: #e8e0ff;
@@ -381,7 +374,7 @@ body.t-cyber .rxn.active { background: rgba(0,240,255,0.12); border-color: rgba(
 body.t-cyber footer { background: rgba(5,5,16,0.9); color: #3a3a5a; }
 body.t-cyber .topbar-counter { background: rgba(180,0,255,0.08); border-color: rgba(180,0,255,0.2); }
 
-/* ── BRUTALIST ── */
+
 body.t-brutalist {
   background: #111;
   --text: #fff;
@@ -403,7 +396,7 @@ body.t-brutalist .rxn { border-radius: 6px; }
 body.t-brutalist .rxn.active { background: rgba(232,255,0,0.1); border-color: rgba(232,255,0,0.5); }
 body.t-brutalist footer { background: rgba(17,17,17,0.95); color: #333; }
 
-/* ── WELLNESS ── */
+
 body.t-wellness {
   background: #ede8f0;
   --text: #3d3347;
@@ -429,7 +422,7 @@ body.t-wellness .dot { background: rgba(0,0,0,0.12); }
 body.t-wellness footer { background: rgba(237,232,240,0.9); color: #b0a3bb; border-top-color: rgba(160,130,190,0.15); }
 body.t-wellness .topbar-counter { background: rgba(100,80,130,0.06); border-color: rgba(160,130,190,0.18); color: #8a7d96; }
 
-/* ── RETRO 70s ── */
+
 body.t-retro {
   background: #2b1a0e;
   --text: #f0dcc8;
@@ -446,7 +439,7 @@ body.t-retro .q-text { font-family: 'Special Elite', cursive; font-size: clamp(1
 body.t-retro .q-mark { font-family: 'Playfair Display', serif; color: #d4a843; opacity: 0.4; font-size: 78px; }
 body.t-retro footer { background: rgba(20,10,4,0.9); color: #5a4530; }
 
-/* ── GLASSMORPHISM ── */
+
 body.t-glass {
   background: #0f1629;
   --text: #e2e8f0;
@@ -464,7 +457,7 @@ body.t-glass .q-text { font-family: 'Cormorant Garamond', serif; font-weight: 30
 body.t-glass .rxn.active { background: rgba(96,165,250,0.15); border-color: rgba(96,165,250,0.45); }
 body.t-glass footer { background: rgba(15,22,41,0.8); color: #3a4a6a; }
 
-/* ── POSTER / TYPOGRAPHIC ── */
+
 body.t-poster {
   background: #0a0a0a;
   --text: #fff;
@@ -495,7 +488,6 @@ body.t-poster .rxn { background: rgba(255,255,255,0.04); border-color: rgba(255,
 body.t-poster .rxn.active { background: rgba(255,107,53,0.12); border-color: rgba(255,107,53,0.45); }
 body.t-poster footer { background: rgba(10,10,10,0.95); color: #333; }
 
-/* ─── SCANLINE OVERLAY (cyber only) ─── */
 body.t-cyber .stage::after {
   content: '';
   position: absolute; inset: 0;
@@ -504,16 +496,15 @@ body.t-cyber .stage::after {
   z-index: 1;
 }
 
-/* ─── SAFE-AREA ROOT (notch / dynamic island) ─── */
+
 :root {
   --safe-top:    env(safe-area-inset-top,  0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* ─── RESPONSIVE ─── */
 @media (max-width: 600px) {
 
-  /* ── topbar ── */
+
   .topbar {
     padding: 8px 12px 6px;
     padding-top: calc(8px + var(--safe-top));
@@ -524,13 +515,12 @@ body.t-cyber .stage::after {
   .topbar-title { font-size: 13px; letter-spacing: 2px; }
   .topbar-counter { font-size: 10px; padding: 3px 8px; }
 
-  /* Directory toggle → icon-only on mobile */
   .dir-toggle {
     font-size: 12px;
     padding: 6px 12px;
   }
 
-  /* theme swatches row */
+
   .theme-strip { gap: 2px; padding: 6px 0; }
   .theme-btn { width: 28px; height: 28px; }
 
